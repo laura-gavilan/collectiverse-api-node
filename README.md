@@ -1,4 +1,4 @@
-# 🌙 Dream List API — Tu Primera API con Express
+# Tu Primera API con Node - 🌙 Dream List API
 
 API REST sencilla para gestionar una lista de sueños. En esta clase aprenderás a crear un servidor con **Node.js** y **Express**, y a manejar las operaciones CRUD básicas.
 
