@@ -1,259 +1,324 @@
-# Tu Primera API con Node - 🌙 Dream List API
+Collectiverse
+Descripción
 
-API REST sencilla para gestionar una lista de sueños. En esta clase aprenderás a crear un servidor con **Node.js** y **Express**, y a manejar las operaciones CRUD básicas.
+Collectiverse es una aplicación web diseñada para coleccionistas de cómics, películas y vinilos (actualmente enfocada en cómics).
+Permite a los usuarios gestionar y organizar sus colecciones, registrar cómics, clasificarlos por categorías, llevar un control de lo que tienen, quieren o les falta, y compartir su actividad con amigos.
 
----
+La aplicación incluye:
 
-## 📦 1. Inicializar el proyecto
+Registro e inicio de sesión
 
-Abre la terminal en la carpeta del proyecto y ejecuta:
+Gestión de cómics con información completa
 
-```bash
-npm init -y
-```
+Colecciones personales con estados de lectura
 
-Esto generará un archivo `package.json` con la configuración por defecto.
+Puntuaciones detalladas (guion, dibujo, edición y nota final)
 
-> **Importante:** Para poder usar `import` en lugar de `require`, añade la siguiente línea en tu `package.json`:
->
-> ```json
-> "type": "module"
-> ```
+Reseñas de usuarios
 
----
+Muro social y actividad de amigos
 
-## 📥 2. Instalar dependencias
+Filtrado avanzado y estadísticas
 
-### Express (dependencia de producción)
+Posibilidad futura de integrar películas, vinilos, eventos y tiendas cercanas
 
-```bash
-npm install express
-```
+🔹 Funcionalidades
+Usuario
 
-### Nodemon (dependencia de desarrollo)
+Registrarse, iniciar sesión y cerrar sesión
 
-Nodemon reinicia automáticamente el servidor cada vez que guardas un cambio en tu código. Se instala como **dependencia de desarrollo** porque solo lo necesitamos mientras programamos (aunque en clase lo he instalado como depedencia normal, lo correcto es instalarla como dependencia de desarrollo):
+Ver y editar su perfil
 
-```bash
-npm i -D nodemon
-```
+Gestión de cómics
 
-> **Nota:** Con `--save-dev` (o `-D`) le indicamos a npm que es una dependencia de desarrollo. Verás que se guarda en `devDependencies` dentro de `package.json`.
+Ver la lista de cómics y detalles de cada uno
 
----
+Añadir, editar y eliminar cómics
 
-## ⚙️ 3. Configurar los scripts
+Ver un pequeño avance (aprox. 8 páginas)
 
-En tu `package.json`, añade estos scripts:
+Filtrar por categoría, autor, editorial, estilo, año, capítulos, páginas y puntuación
 
-```json
-"scripts": {
-  "start": "node index.js",
-  "dev": "nodemon index.js"
-}
-```
+Colección
 
-- `npm start` → Ejecuta el servidor una sola vez.
-- `npm run dev` → Ejecuta el servidor con nodemon (se reinicia al guardar cambios). **Usa este durante el desarrollo.**
+Añadir cómics a la colección personal
 
----
+Marcar estado: Tengo, Quiero, Me falta
 
-## 🚀 4. Crear el servidor
+Marcar como Leído / Falta por leer
 
-Crea un archivo `index.js` con el siguiente contenido:
+Ver número total de colecciones
 
-```js
-// Express
-import express from "express";
+Marcar favoritos
 
-const app = express();
+Puntuaciones y reseñas
 
-const PORT = 3000;
+Puntuar cómics de forma general y por guion, dibujo y edición
 
-let dreams = [];
+Añadir, editar y eliminar reseñas
 
-// Middleware: transforma el body de las peticiones a JSON
-app.use(express.json());
+Ver puntuaciones y reseñas de otros usuarios
 
-// GET / — Comprobar que el servidor funciona
-app.get("/", (req, res) => {
-    return res.json({ message: "✅ Servidor funcionando correctamente" });
-});
+Red social / amigos
 
-// POST /dreams — Crear un nuevo sueño
-app.post("/dreams", (req, res) => {
-    console.log(req.body);
+Buscar usuarios
 
-    if (!req.body.title) {
-        return res.status(400).json("El campo 'title' es obligatorio");
-    }
+Enviar, aceptar o rechazar solicitudes de amistad
 
-    const newDream = {
-        id: Date.now(),
-        ...req.body,
-    };
+Ver la colección de amigos
 
-    dreams.push(newDream);
+Muro de actividad: “Ana añadió Spider-Man #1 a su colección”
 
-    return res.status(201).json(dreams);
-});
+Registrar acciones automáticamente en la actividad
 
-// PUT /dreams/:id — Actualizar un sueño (📝 EJERCICIO)
-// TODO: Completa esta ruta
+Estadísticas
 
-// DELETE /dreams/:id — Eliminar un sueño (📝 EJERCICIO)
-// TODO: Completa esta ruta
+Top de cómics más populares
 
-// Crea el servidor
-app.listen(PORT, () => {
-    console.log(`Servidor funcionando en http://localhost:${PORT}`);
-});
-```
+Top de usuarios con más colecciones o mejores puntuaciones
 
-Arranca el servidor con:
+🔹 Modelos de datos
+Usuario
 
-```bash
-npm run dev
-```
+id_usuario
 
-Deberías ver en la terminal:
+nombre_usuario
 
-```
-Servidor funcionando en http://localhost:3000
-```
+email
 
----
+contraseña (hashed)
 
-## 🧪 5. Probar con Postman
+avatar
 
-### GET `/`
+fecha_registro
 
-- **Método:** `GET`
-- **URL:** `http://localhost:3000/`
-- **Respuesta esperada:**
-  ```json
-  { "message": "✅ Servidor funcionando correctamente" }
-  ```
+Cómic
 
-### POST `/dreams`
+id_comic
 
-- **Método:** `POST`
-- **URL:** `http://localhost:3000/dreams`
-- **Body** (pestaña Body → raw → JSON):
-  ```json
-  {
-    "title": "Viajar a Japón",
-    "description": "Visitar Tokio y Kioto"
-  }
-  ```
-- **Respuesta esperada (201):**
-  ```json
-  [
-    {
-      "id": 1709741234567,
-      "title": "Viajar a Japón",
-      "description": "Visitar Tokio y Kioto"
-    }
-  ]
-  ```
+nombre_comic
 
-### PUT `/dreams/:id`
+estilo (europeo, americano, manga…)
 
-- **Método:** `PUT`
-- **URL:** `http://localhost:3000/dreams/1709741234567` (usa el `id` real del sueño creado)
-- **Body** (pestaña Body → raw → JSON):
-  ```json
-  {
-    "title": "Viajar a Japón y Corea",
-    "description": "Visitar Tokio, Kioto y Seúl"
-  }
-  ```
+autor, guionista, ilustrador
 
-### DELETE `/dreams/:id`
+editorial
 
-- **Método:** `DELETE`
-- **URL:** `http://localhost:3000/dreams/1709741234567` (usa el `id` real del sueño)
-- **Body:** No necesita body.
+numero_volumen
 
----
+numero_capitulos
 
-## 📝 6. Ejercicio: Completa las rutas PUT y DELETE
+año_publicacion
 
-Ya tienes funcionando `GET /` y `POST /dreams`. Ahora te toca implementar las dos rutas que faltan.
+numero_paginas
 
-### 🔧 PUT `/dreams/:id` — Actualizar un sueño
+descripcion
 
-**Pistas:**
+imagen_portada
 
-1. La ruta debe incluir un **parámetro dinámico** para el id. En Express se define así:
-   ```js
-   app.put("/dreams/:id", (req, res) => {
-       // ...
-   });
-   ```
+enlace_amazon
 
-2. Puedes acceder al parámetro `id` de la URL con `req.params.id`.
+avance_comic (mini PDF o imágenes)
 
-3. Usa el método `.findIndex()` del array para buscar el sueño que coincida con ese `id`. Recuerda que `req.params.id` es un **string**, así que tendrás que convertirlo a número o comparar correctamente.
+rating_promedio, rating_guion, rating_dibujo, rating_edicion
 
-4. Si el sueño **no existe** (el índice es `-1`), devuelve un error `404` con un mensaje descriptivo.
+Categoría
 
-5. Si el sueño **existe**, actualiza sus datos. Piensa en cómo usar el spread operator (`...`) para mantener el `id` original pero actualizar el resto de campos con lo que viene en `req.body`.
+id_categoria
 
-6. Devuelve el array `dreams` actualizado con un status `200`.
+nombre_categoria
 
-> 💡 **Estructura general:**
-> ```
-> 1. Obtener el id de req.params
-> 2. Buscar el índice del sueño en el array
-> 3. Si no existe → responder con 404
-> 4. Si existe → actualizar el sueño en el array
-> 5. Responder con el array actualizado
-> ```
+Colección de usuario
 
----
+id_coleccion
 
-### 🗑️ DELETE `/dreams/:id` — Eliminar un sueño
+id_usuario
 
-**Pistas:**
+id_comic
 
-1. La ruta se define igual que la de PUT, pero con `app.delete(...)`.
+estado (tengo / quiero / me_falta)
 
-2. También recibes el `id` por `req.params.id`.
+leido (sí/no)
 
-3. Busca el índice del sueño a eliminar con `.findIndex()`.
+Amigos
 
-4. Si **no existe**, devuelve un `404`.
+id_amistad
 
-5. Si **existe**, elimínalo del array. Investiga el método `.splice()` o piensa en cómo podrías usar `.filter()` para crear un nuevo array sin ese elemento.
+id_usuario
 
-6. Devuelve el array `dreams` actualizado con status `200`.
+id_amigo
 
-> 💡 **Estructura general:**
-> ```
-> 1. Obtener el id de req.params
-> 2. Buscar el índice del sueño en el array
-> 3. Si no existe → responder con 404
-> 4. Si existe → eliminar el sueño del array
-> 5. Responder con el array actualizado
-> ```
+estado (pendiente / aceptado / bloqueado)
 
----
+Actividad
 
-### ✅ Checklist de validación
+id_actividad
 
-Cuando termines, comprueba que:
+id_usuario
 
-- [ ] `POST /dreams` crea un sueño con un `id` único (descomenta `id: Date.now()` en el código)
-- [ ] `PUT /dreams/:id` actualiza un sueño existente y devuelve `200`
-- [ ] `PUT /dreams/:id` devuelve `404` si el sueño no existe
-- [ ] `DELETE /dreams/:id` elimina un sueño existente y devuelve `200`
-- [ ] `DELETE /dreams/:id` devuelve `404` si el sueño no existe
+tipo_accion (añadió, cambió, puntuó, favorito, comentario)
 
----
+id_comic
 
-## 📚 Recursos útiles
+descripcion
 
-- [Documentación de Express](https://expressjs.com/)
-- [req.params en Express](https://expressjs.com/en/api.html#req.params)
-- [Descargar Postman](https://www.postman.com/downloads/)
+fecha
+
+Reseñas
+
+id_resena
+
+id_usuario
+
+id_comic
+
+titulo_resena
+
+texto_resena
+
+puntuacion_total, puntuacion_guion, puntuacion_dibujo, puntuacion_edicion
+
+fecha
+
+🔹 Rutas de la API
+Autenticación
+Método	Ruta	Qué hace
+POST	/register	Registrar un usuario nuevo
+POST	/login	Iniciar sesión
+GET	/profile	Ver el perfil del usuario logueado
+Usuarios
+Método	Ruta	Qué hace
+GET	/usuarios	Ver todos los usuarios
+GET	/usuarios/:id	Ver un usuario por su id
+PUT	/usuarios/:id	Editar la información de un usuario
+DELETE	/usuarios/:id	Eliminar un usuario
+Cómics
+Método	Ruta	Qué hace
+GET	/comics	Ver todos los cómics
+GET	/comics/:id	Ver un cómic por su id
+POST	/comics	Crear un nuevo cómic
+PUT	/comics/:id	Editar un cómic
+DELETE	/comics/:id	Eliminar un cómic
+GET	/comics/:id/avance	Ver un pequeño avance del cómic (8 páginas aprox.)
+GET	/comics?categoria=X&autor=Y&año_min=A&año_max=B&estado=Z&rating_min=R	Filtrar cómics por múltiples criterios
+Puntuación de cómics
+Método	Ruta	Qué hace
+POST	/comics/:id/rating	Añadir puntuación general
+PUT	/comics/:id/rating	Modificar puntuación general
+DELETE	/comics/:id/rating	Eliminar puntuación
+GET	/comics/:id/rating	Ver todas las puntuaciones
+POST	/comics/:id/rating_detallado	Añadir puntuación por guion, dibujo, edición y nota final
+GET	/comics/:id/rating_detallado	Ver puntuaciones detalladas
+Categorías
+Método	Ruta	Qué hace
+GET	/categorias	Ver todas las categorías
+GET	/categorias/:id	Ver una categoría
+POST	/categorias	Crear categoría
+PUT	/categorias/:id	Editar categoría
+DELETE	/categorias/:id	Eliminar categoría
+Colección del usuario
+Método	Ruta	Qué hace
+GET	/coleccion	Ver colección del usuario
+POST	/coleccion	Añadir un cómic a la colección
+PUT	/coleccion/:id	Cambiar estado (tengo / quiero / me_falta)
+PUT	/coleccion/:id/leido	Marcar leído / falta por leer
+DELETE	/coleccion/:id	Eliminar un cómic de la colección
+GET	/usuarios/:id/colecciones/count	Ver número total de colecciones del usuario
+Amigos
+Método	Ruta	Qué hace
+GET	/amigos	Ver lista de amigos
+POST	/amigos	Enviar solicitud de amistad
+PUT	/amigos/:id	Aceptar solicitud de amistad
+DELETE	/amigos/:id	Eliminar un amigo
+Actividad / Muro social
+Método	Ruta	Qué hace
+GET	/actividad	Ver actividad reciente de tus amigos
+GET	/actividad/:usuario_id	Ver actividad pública de un usuario
+POST	/actividad	Registrar acción del usuario
+DELETE	/actividad/:id	Eliminar acción del muro
+Reseñas
+Método	Ruta	Qué hace
+POST	/comics/:id/resenas	Añadir reseña de un cómic
+GET	/comics/:id/resenas	Ver todas las reseñas de un cómic
+PUT	/resenas/:id	Editar tu reseña
+DELETE	/resenas/:id	Eliminar tu reseña
+🔹 Privado vs Público
+Privado
+
+Contraseña, email y colección personal
+
+Añadir, editar o eliminar cómics
+
+Marcar estado de lectura
+
+Crear, aceptar o eliminar amistades
+
+Escribir reseñas y puntuaciones
+
+Público
+
+Ver cómics y sus detalles
+
+Buscar cómics por categoría, autor, estilo, etc.
+
+Ver categorías
+
+Ver perfil público de usuarios
+
+Avance de los cómics (mini preview)
+
+┌────────────┐       ┌─────────────┐       ┌────────────┐
+│  Usuarios  │       │   Amigos    │       │  Categorias│
+├────────────┤       ├─────────────┤       ├────────────┤
+│ id_usuario │<─────>│ id_usuario  │       │ id_categoria│
+│ nombre     │       │ id_amigo    │       │ nombre      │
+│ email      │       │ estado      │       └────────────┘
+│ contraseña │       └─────────────┘
+│ avatar     │
+│ fecha_reg  │
+└────────────┘
+       │
+       │
+       │
+       ▼
+┌────────────┐       ┌──────────────┐
+│   Comics   │       │ Coleccion    │
+├────────────┤       ├──────────────┤
+│ id_comic   │<─────>│ id_coleccion │
+│ nombre     │       │ id_usuario   │
+│ estilo     │       │ id_comic     │
+│ autor      │       │ estado       │ <- tengo / quiero / me_falta
+│ guionista  │       │ leido        │ <- sí / no
+│ ilustrador │       │ fecha_agregado│
+│ editorial  │       └──────────────┘
+│ numero_vol │
+│ numero_cap │
+│ año_pub    │
+│ paginas    │
+│ descripcion│
+│ imagen     │
+│ enlace_amz │
+│ avance_comic│
+│ rating_prom│
+│ rating_guion│
+│ rating_dibujo│
+│ rating_edicion│
+│ id_categoria│
+└────────────┘
+       │
+       │
+       ▼
+┌───────────────┐       ┌─────────────┐
+│  Reseñas      │       │ Actividad   │
+├───────────────┤       ├─────────────┤
+│ id_resena     │       │ id_actividad│
+│ id_usuario    │       │ id_usuario  │
+│ id_comic      │       │ tipo_accion │ <- añadió, puntuó, favorito...
+│ titulo        │       │ id_comic    │
+│ texto         │       │ descripcion │
+│ puntuacion_total│     │ fecha       │
+│ puntuacion_guion│
+│ puntuacion_dibujo│
+│ puntuacion_edicion│
+│ fecha          │
+└───────────────┘
