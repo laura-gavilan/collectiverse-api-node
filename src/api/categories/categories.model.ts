@@ -12,10 +12,10 @@ const categorySchema = new Schema({
         index: true,
         trim: true,
     },
-    itemType: {
+    collectionType: {
         type: String,
         required: true,
-        enum: ["comics", "vinyls"],
+        enum: ["Comic", "Vinyl"],
     },
 
 }, { timestamps: true });

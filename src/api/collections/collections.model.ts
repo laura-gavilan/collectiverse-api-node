@@ -40,6 +40,6 @@ const collectionsSchema = new Schema({
 }, { timestamps: true });
 
 
-collectionsSchema.index({ userId: 1, itemId: 1, itemType: 1 }, { unique: true });
+collectionsSchema.index({ userId: 1, collectionId: 1, collectionType: 1 }, { unique: true });
 
 export const collection = mongoose.model("collections", collectionsSchema);

@@ -1,7 +1,7 @@
 export type Category = {
     name: string,
     slug: string,
-    itemType: "comics" | "vinyls",
+    collectionType: "Comic" | "Vinyl",
 };
 
 

@@ -1,11 +1,12 @@
 import { Request, Response } from "express"
 import { Categories } from "./categories.model.js";
 
+
 export const getCategories = async (req: Request, res: Response) => {
     try {
-        const { itemType } = req.query;  
+        const { collectionType: collectionType } = req.query;  
 
-        const filter = itemType ? { itemType: itemType as string } : {};
+        const filter: Record<string, any> = {};
         const categories = await Categories.find(filter);
 
         return res.json({ message: "Categorías", categories });
@@ -31,12 +32,18 @@ export const getCategoryById = async (req: Request, res: Response) => {
 
 export const createCategory = async (req: Request, res: Response) => {
     try {
-        const { name, itemType} = req.body;
-        if (!name || !itemType) {
+        const { name, collectionType} = req.body;
+        if (!name || !collectionType) {
             return res.status(400).json({ error: "El campo name es obligatorio" });
         };
 
-        const newCategory = await Categories.create({ name, itemType });
+        const formattedType = collectionType.charAt(0).toUpperCase() + collectionType.slice(1).toLowerCase();
+
+        if (!["Comic", "Vinyl"].includes(formattedType)) {
+            return res.status(400).json({ error: "collectionType debe ser 'Comic' o 'Vinyl'" });
+        }
+
+        const newCategory = await Categories.create({ name, collectionType: formattedType });
         return res.status(201).json(newCategory);
     } catch (error) {
         return res.status(500).json({ error: "Error al crear la categoría" });
@@ -45,12 +52,12 @@ export const createCategory = async (req: Request, res: Response) => {
 
 export const editCategory = async (req: Request, res: Response) => {
     try {
-        const { name, itemType } = req.body;
+        const { name,  collectionType } = req.body;
         if (!name) {
             return res.status(400).json({ error: "El campo name es obligatorio" });
         };
 
-        const category = await Categories.findByIdAndUpdate(req.params.id, { name, ...(itemType && { itemType })}, { new: true });
+        const category = await Categories.findByIdAndUpdate(req.params.id, { name, ...(collectionType && {  collectionType })}, { new: true });
 
         if (!category) {
             return res.status(404).json({ error: "Categoría no encontrada" });

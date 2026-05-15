@@ -3,21 +3,19 @@ import db from "../../config/db.js";
 import { Categories } from "./categories.model.js";
 
 const categoryData = [
-    //Cómics
-    { name: "Manga",        slug: "manga",          itemType: "comics" },
-    { name: "Europeo",      slug: "europeo",        itemType: "comics" },
-    { name: "Americano",    slug: "americano",      itemType: "comics" },
-    { name: "Independiente",slug: "independiente",  itemType: "comics" },
-    { name: "Superhéroes",  slug: "superheroes",    itemType: "comics" },
+    { name: "Manga", slug: "manga", collectionType: "Comic" },
+    { name: "Europeo", slug: "europeo", collectionType: "Comic" },
+    { name: "Americano", slug: "americano", collectionType: "Comic" },
+    { name: "Independiente", slug: "independiente", collectionType: "Comic" },
+    { name: "Superhéroes", slug: "superheroes", collectionType: "Comic" },
 
-    // Vinyls
-    { name: "Rock",         slug: "rock",           itemType: "vinyls" },
-    { name: "Jazz",         slug: "jazz",           itemType: "vinyls" },
-    { name: "Pop",          slug: "pop",            itemType: "vinyls" },
-    { name: "Electrónica",  slug: "electronica",    itemType: "vinyls" },
-    { name: "Clásica",      slug: "clasica",        itemType: "vinyls" },
-    { name: "Hip-Hop",      slug: "hip-hop",        itemType: "vinyls" },
-    { name: "Otros",        slug: "otros",          itemType: "vinyls" },
+    { name: "Rock", slug: "rock", collectionType: "Vinyl" },
+    { name: "Jazz", slug: "jazz", collectionType: "Vinyl" },
+    { name: "Pop", slug: "pop", collectionType: "Vinyl" },
+    { name: "Electrónica", slug: "electronica", collectionType: "Vinyl" },
+    { name: "Clásica", slug: "clasica", collectionType: "Vinyl" },
+    { name: "Hip-Hop", slug: "hip-hop", collectionType: "Vinyl" },
+    { name: "Otros", slug: "otros", collectionType: "Vinyl" },
 ];
 
 
