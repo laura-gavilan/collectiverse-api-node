@@ -1,17 +1,16 @@
 import { Request, Response } from "express"
 import { Categories } from "./categories.model.js";
+import { sendError, sendSuccess } from "../../utils/response.utils.js";
 
 
 export const getCategories = async (req: Request, res: Response) => {
     try {
-        const { collectionType: collectionType } = req.query;  
-
         const filter: Record<string, any> = {};
         const categories = await Categories.find(filter);
 
-        return res.json({ message: "Categorías", categories });
+        return sendSuccess(res, categories, "Categorías obtenidas correctamente");
     } catch (error) {
-        return res.status(500).json({ error: "Error al obtener categorías" });
+        return sendError(res, (error as Error).message, 500);
     }
 };
 
@@ -21,51 +20,51 @@ export const getCategoryById = async (req: Request, res: Response) => {
         const category = await Categories.findById(id);
 
         if (!category) {
-            return res.status(404).json({ error: "Categoría no encontrada" });
+            return sendError(res, "Categoría no encontrada");
         }
-        return res.json(category);
+        return sendSuccess(res, category, "Categoría encontrada");
     } catch (error) {
-        return res.status(500).json({ error: "Error al obtener la categoría" });
+        return sendError(res, "Error al obtener la categoría", 500);
     }
 };
 
 
 export const createCategory = async (req: Request, res: Response) => {
     try {
-        const { name, collectionType} = req.body;
+        const { name, collectionType } = req.body;
         if (!name || !collectionType) {
-            return res.status(400).json({ error: "El campo name es obligatorio" });
+            return sendError(res, "El campo name y collectionType son obligatorios", 400);
         };
 
         const formattedType = collectionType.charAt(0).toUpperCase() + collectionType.slice(1).toLowerCase();
 
         if (!["Comic", "Vinyl"].includes(formattedType)) {
-            return res.status(400).json({ error: "collectionType debe ser 'Comic' o 'Vinyl'" });
+            return sendError(res, "collectionType debe ser 'Comic' o 'Vinyl'", 400);
         }
 
         const newCategory = await Categories.create({ name, collectionType: formattedType });
-        return res.status(201).json(newCategory);
+        return sendSuccess(res, newCategory, "Categoría creada correctamente", 201);
     } catch (error) {
-        return res.status(500).json({ error: "Error al crear la categoría" });
+        return sendError(res, "Error al crear la categoría", 500);
     }
 };
 
 export const editCategory = async (req: Request, res: Response) => {
     try {
-        const { name,  collectionType } = req.body;
+        const { name, collectionType } = req.body;
         if (!name) {
-            return res.status(400).json({ error: "El campo name es obligatorio" });
+            return sendError(res, "El campo name es obligatorio", 400);
         };
 
-        const category = await Categories.findByIdAndUpdate(req.params.id, { name, ...(collectionType && {  collectionType })}, { new: true });
+        const category = await Categories.findByIdAndUpdate(req.params.id, { name, ...(collectionType && { collectionType }) }, { new: true });
 
         if (!category) {
-            return res.status(404).json({ error: "Categoría no encontrada" });
+            return sendError(res, "Categoría no encontrada", 404);
         };
 
-        return res.json(category);
+        return sendSuccess(res, category, "Categoría editada correctamente");
     } catch (error) {
-        return res.status(500).json({ error: "Error al editar la categoría" });
+        return sendError(res, "Error al editar la categoría", 500);
     }
 };
 
@@ -75,11 +74,11 @@ export const deleteCategory = async (req: Request, res: Response) => {
 
         const category = await Categories.findByIdAndDelete(id);
         if (!category) {
-            return res.status(404).json({ error: "Categoría no encontrada" });
+            return sendError(res, "Categoría no encontrada", 404);
         };
 
-        return res.status(200).json({ message: "Categoría eliminada correctamente" });
+        return sendSuccess(res, null, "Categoría eliminada correctamente");
     } catch (error) {
-        return res.status(500).json({ error: "Error al eliminar la categoría" });
+        return sendError(res, "Error al eliminar la categoría", 500);
     }
 };

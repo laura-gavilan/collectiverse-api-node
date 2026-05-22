@@ -1,13 +1,14 @@
 import { Request, Response } from "express";
 import { User } from "./users.model.js";
+import { sendError, sendSuccess } from "../../utils/response.utils.js";
 
 
 export const getUsers = async (req: Request, res: Response) => {
     try {
         const users = await User.find();
-        return res.json(users);
+        return sendSuccess(res, users, "Usuarios obtenidos correctamente");
     } catch (error) {
-        return res.status(500).json({ error: "Error al obtener los usuarios" });
+        return sendError(res, "Error al obtener los usuarios", 500);
     }
 };
 
@@ -17,12 +18,12 @@ export const getUsersById = async (req: Request, res: Response) => {
         const user = await User.findById(id);
 
         if (!user) {
-            return res.status(404).json({ error: "Usuario no encontrado" });
+            return sendError(res, "Usuario no encontrado", 404);
         };
 
-        return res.json(user);
+        return sendSuccess(res, user, "Usuario encontrado");
     } catch (error) {
-        return res.status(500).json({ error: "Error al obtener el usuario" });
+        return sendError(res, "Error al obtener el usuario", 500);
     }
 };
 
@@ -31,18 +32,18 @@ export const createUser = async (req: Request, res: Response) => {
         const { username, email, password } = req.body;
 
         if (!username || !email || !password) {
-            return res.status(400).json({ error: "Los campos username, email y password son obligatorios" });
+            return sendError(res, "Los campos username, email y password son obligatorios", 400);
         }
 
         const newUser = await User.create(req.body);
-        return res.status(201).json(newUser);
+        return sendSuccess(res, newUser, "Usuario creado correctamente", 201);
     } catch (error: any) {
         if (error.code === 11000) {
             const field = Object.keys(error.keyValue)[0];
-            return res.status(400).json({ error: `El ${field} ya está en uso` });
+            return sendError(res, `El ${field} ya está en uso`, 400);
         }
-        return res.status(500).json({ error: "Error al crear el usuario" });
-    }
+        return sendError(res, "Error al crear el usuario", 500);
+    };
 };
 
 export const editUser = async (req: Request, res: Response) => {
@@ -53,11 +54,11 @@ export const editUser = async (req: Request, res: Response) => {
         const user = await User.findByIdAndUpdate(id, req.body, { new: true });
 
         if (!user) {
-            return res.status(404).json({ error: "Usuario no encontrado" });
+            return sendError(res, "Usuario no encontrado", 404);
         }
-        return res.json(user);
+        return sendSuccess(res, user, "Usuario editado correctamente");
     } catch (error) {
-        return res.status(500).json({ error: "Error al editar el usuario" });
+        return sendError(res, "Error al editar el usuario", 500);
     }
 };
 
@@ -66,11 +67,11 @@ export const deleteUser = async (req: Request, res: Response) => {
         const { id } = req.params;
         const user = await User.findByIdAndDelete(id);
         if (!user) {
-            return res.status(404).json({ error: "Usuario no encontrado" });
+            return sendError(res, "Usuario no encontrado", 404);
         }
 
-        return res.status(200).json({ message: "Usuario eliminado correctamente" });
+        return sendSuccess(res, null, "Usuario eliminado correctamente");
     } catch (error) {
-        return res.status(500).json({ error: "Error al eliminar el usuario" });
+        return sendError(res, "Error al eliminar el usuario", 500);
     }
 };

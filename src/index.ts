@@ -8,6 +8,7 @@ import { categoriesRoutes } from "./api/categories/categories.routes.js";
 import db from "./config/db.js";
 import { collectionRoutes } from "./api/collections/collections.routes.js";
 import { vinylsRoutes } from "./api/vinyls/vinyls.routes.js";
+import { errorHandler, notFoundHandler } from "./utils/error.middleware.js";
 
 db.connect();
 
@@ -33,6 +34,9 @@ app.use("/users", usersRoutes);
 app.use("/categories", categoriesRoutes);
 app.use("/collections", collectionRoutes);
 app.use("/vinyls", vinylsRoutes);
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 //Crea el servidor
 app.listen(PORT, () => {
