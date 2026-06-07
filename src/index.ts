@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import "dotenv/config";
 import { comicsRoutes } from "./api/comics/comics.routes.js";
@@ -9,6 +9,9 @@ import db from "./config/db.js";
 import { collectionRoutes } from "./api/collections/collections.routes.js";
 import { vinylsRoutes } from "./api/vinyls/vinyls.routes.js";
 import { errorHandler, notFoundHandler } from "./utils/error.middleware.js";
+import { requestLogger } from "./middlewares/global.middleware.js";
+
+
 
 db.connect();
 
@@ -21,9 +24,11 @@ app.use(express.json());
 
 app.use(cors());
 
+app.use(requestLogger);
+
 //Crea la ruta
 app.get("/", (req: Request, res: Response) => {
-    // console.log(process.env.MONGO_URI)
+    console.log(process.env.MONGO_URI)
     return res.json({ message: "API collectiverse funcionando correctamente" });
 });
 
@@ -35,8 +40,8 @@ app.use("/categories", categoriesRoutes);
 app.use("/collections", collectionRoutes);
 app.use("/vinyls", vinylsRoutes);
 
-app.use(notFoundHandler);
-app.use(errorHandler);
+app.use(notFoundHandler);  //middleware. next: da paso al siguiente punto de ejecución del servidor. Al ejecutar next pasa a la siguiente función (la de abajo)
+app.use(errorHandler); //manejador global de errores. 
 
 //Crea el servidor
 app.listen(PORT, () => {

@@ -1,3 +1,5 @@
+import { Request } from "express";
+
 export type Category = {
     name: string,
     slug: string,
@@ -5,3 +7,8 @@ export type Category = {
 };
 
 
+
+export type CustomRequest = Request & {
+    propiedad?: string;
+    http_info_log?: string;
+};
